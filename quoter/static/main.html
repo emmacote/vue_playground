@@ -6,34 +6,6 @@
 </head>
 <body>
 
-<div id="app">
-    <grocery-list></grocery-list>
-</div>
-
-<script src="https://unpkg.com/vue@3/dist/vue.global.js">
-
-</script>
-
-<script>
-    const currencyFormatter =  Intl.NumberFormat("en-US", {style: "currency", currency: "USD"});
-
-    const GroceryList = {
-        data: function(){
-            return {
-                newFood: "",
-                newPrice: "",
-                foods: [],
-                sortType: 3,
-                searchTerm: "",
-                NAME_ORDER: 1,
-                PRICE_ORDER: 2,
-                NO_ORDER: 3,
-                nextID: 0
-            };
-        },
-        template: `
-            <table>
-=======
 <template id="grocery-list-template">
     <table>
         <tr>
@@ -81,9 +53,7 @@
     <grocery-list></grocery-list>
 </div>
 
-<script src="https://unpkg.com/vue@3/dist/vue.global.js">
-
-</script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
 <script>
     const currencyFormatter =  Intl.NumberFormat("en-US", {style: "currency", currency: "USD"});
