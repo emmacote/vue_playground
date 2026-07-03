@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test starter page.</title>
+</head>
+<body>
+
+<div id="app">
+    <table>
+        <tr>
+            <td><b>NEW GROCERY ITEM:</td>
+            <td><input name="txtNewFood" type="text" placeholder="food name" v-model="newFood"/></td>
+        </tr>
+        <tr>
+            <td><b>NEW PRICE: </b></td>
+            <td> <input name="txtNewPrice" type="number" placeholder="price" v-model.number="newPrice"/></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button v-on:click="addFoodClick">Add Item</button>
+            </td>
+        </tr>
+        <tr>
+            <td><b>Average: </b> {{ avg }}</td>
+        </tr>
+    </table>
+    <br />
+    <hr />
+
+    <table>
+        <tr>
+            <td><b>Search: </b></td>
+            <td><input type="text" v-model="searchTerm"</td>
+        </tr>
+    </table>
+
+    <hr />
+
+    <h1>Grocery List</h1>
+    <input type="radio" name="sortOption" v-model="sortType" :value="NO_ORDER"   checked />Unsorted &nbsp;
+    <input type="radio" name="sortOption" v-model="sortType" :value="NAME_ORDER" />Sorted By Name &nbsp;
+    <input type="radio" name="sortOption" v-model="sortType" :value="PRICE_ORDER" />Sorted By Price
+    <ul>
+        <li v-for="food in searchedFoods" :key="food.foodID">
+            {{food.name}} - {{toUSCurrency(food.price)}}
+            <button v-on:click="deleteFoodClick(food.foodID)">Delete food</button>
+        </li>
+    </ul>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js">
+
+</script>
+
+<script>
+    const currencyFormatter =  Intl.NumberFormat("en-US", {style: "currency", currency: "USD"});
+
+    const GroceryList = {
+        data: function(){
+            return {
+                newFood: "",
+                newPrice: "",
+                foods: [],
+                sortType: 3,
+                searchTerm: "",
+                NAME_ORDER: 1,
+                PRICE_ORDER: 2,
+                NO_ORDER: 3,
+                nextID: 0
+            };
+        },
+        
+        methods: {
+            toUSCurrency: function(moneyNumber){
+                return currencyFormatter.format(moneyNumber);
+            },
+            addFoodClick: function(evt){
+                if(this.newFood && this.newPrice){
+                    this.foods.push({foodID: this.nextID, name: this.newFood, price: this.newPrice});
+                    this.nextID += 1;
+                }
+                else {
+                    alert("fyi: food needs a name and it has to have a non-free price attached to it.");
+                }
+            },
+
+            deleteFoodClick: function(foodID){
+                console.log(`id of food to delete... ${foodID}`)
+                this.foods = this.foods.filter(f=>f.foodID != foodID);
+
+            }
+
+        },
+        computed: {
+            sortedFoods(){
+              if( this.sortType === this.NAME_ORDER ){
+                return this.foods.toSorted( (x,y)=>x.name.localeCompare(y.name) );
+              }
+              else if( this.sortType === this.PRICE_ORDER ){
+                return this.foods.toSorted( (x,y)=> x.price - y.price );
+              }
+              else{
+                return this.foods;
+              }
+            },
+
+            searchedFoods(){
+                const searchLambda = (x)=>x.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+                let searchFilteredList = this.sortedFoods.filter(searchLambda);
+                return searchFilteredList;
+            },
+
+            avg(){
+                let total = 0;
+                for(let food of this.searchedFoods){
+                    total += food.price;
+                }
+
+                let currentAvg = 0;
+                if(this.searchedFoods.length > 0){
+                    currentAvg = total / this.searchedFoods.length;
+                }
+
+                return this.toUSCurrency(currentAvg);
+            }
+        },
+        mounted: function(){
+            if (localStorage.foods){
+                try {
+                    this.foods = JSON.parse(localStorage.foods)
+                }
+                catch(error){
+                    console.log("food list in localStorage found but corrupted. Defaulting to an empty food list.");
+                    this.foods = [];
+                }
+            }
+
+            if(localStorage.nextID){
+                this.nextID = Number(localStorage.nextID);
+            }
+        },
+
+        watch: {
+            foods: {
+                handler(newFood, oldFood){
+                    localStorage.foods = JSON.stringify(newFood)
+                },
+                deep: true
+            },
+            nextID(newVal, oldVal){
+                localStorage.nextID = newVal;
+            }
+        }
+    };
+    const app = Vue.createApp(GroceryList);
+    
+    app.mount("#app");
+</script>
+
+</body>
+</html>
