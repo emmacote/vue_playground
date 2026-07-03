@@ -38,7 +38,7 @@
     <hr />
 
     <h1>Grocery List</h1>
-    <input type="radio" name="sortOption" v-model="sortType" :value="NO_ORDER"   checked />Unsorted &nbsp;
+    <input type="radio" name="sortOption" v-model="sortType" :value="NO_ORDER"  />Unsorted &nbsp;
     <input type="radio" name="sortOption" v-model="sortType" :value="NAME_ORDER" />Sorted By Name &nbsp;
     <input type="radio" name="sortOption" v-model="sortType" :value="PRICE_ORDER" />Sorted By Price
     <ul>
@@ -64,7 +64,7 @@
                 newFood: "",
                 newPrice: "",
                 foods: [],
-                sortType: 3,
+                sortType: 0,
                 searchTerm: "",
                 NAME_ORDER: 1,
                 PRICE_ORDER: 2,
