@@ -33,6 +33,9 @@
         },
         template: `
             <table>
+=======
+<template id="grocery-list-template">
+    <table>
         <tr>
             <td><b>NEW GROCERY ITEM:</td>
             <td><input name="txtNewFood" type="text" placeholder="food name" v-model="newFood"/></td>
@@ -72,8 +75,35 @@
             <button v-on:click="deleteFoodClick(food.foodID)">Delete food</button>
         </li>
     </ul>
+</template>
 
-        `,
+<div id="app">
+    <grocery-list></grocery-list>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js">
+
+</script>
+
+<script>
+    const currencyFormatter =  Intl.NumberFormat("en-US", {style: "currency", currency: "USD"});
+
+    const GroceryList = {
+        data: function(){
+            return {
+                newFood: "",
+                newPrice: "",
+                foods: [],
+                sortType: 3,
+                searchTerm: "",
+                NAME_ORDER: 1,
+                PRICE_ORDER: 2,
+                NO_ORDER: 3,
+                nextID: 0
+            };
+        },
+
+        template: "#grocery-list-template",
         
         methods: {
             toUSCurrency: function(moneyNumber){
@@ -157,7 +187,7 @@
             }
         }
     };
-    const app = Vue.createApp({});
+    const app = Vue.createApp();
     app.component("grocery-list", GroceryList);
     
     app.mount("#app");
