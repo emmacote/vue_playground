@@ -21,26 +21,36 @@
                 <button v-on:click="addFoodClick">Add Item</button>
             </td>
         </tr>
-        <tr>
+
+    </table>
+
+    <!-- An average of the price of each food item -->
+    <table>
+            <tr>
             <td><b>Average: </b> {{ avg }}</td>
         </tr>
     </table>
     <br />
     <hr />
 
+    <!-- Seach feature -->
     <table>
         <tr>
             <td><b>Search: </b></td>
-            <td><input type="text" v-model="searchTerm"</td>
+            <td><input type="text" v-model="searchTerm" /></td>
         </tr>
     </table>
 
     <hr />
 
+    
     <h1>Grocery List</h1>
+    <!-- Mechanism for ordering the food b ased on order added (no order) as opposed to by name or by price -->
     <input type="radio" name="sortOption" v-model="sortType" :value="NO_ORDER"  />Unsorted &nbsp;
     <input type="radio" name="sortOption" v-model="sortType" :value="NAME_ORDER" />Sorted By Name &nbsp;
     <input type="radio" name="sortOption" v-model="sortType" :value="PRICE_ORDER" />Sorted By Price
+    
+    <!-- The actual food list with price. -->
     <ul>
         <li v-for="food in searchedFoods" :key="food.foodID">
             {{food.name}} - {{toUSCurrency(food.price)}}
@@ -64,7 +74,7 @@
                 newFood: "",
                 newPrice: "",
                 foods: [],
-                sortType: 0,
+                sortType: 3,
                 searchTerm: "",
                 NAME_ORDER: 1,
                 PRICE_ORDER: 2,
@@ -79,6 +89,7 @@
             toUSCurrency: function(moneyNumber){
                 return currencyFormatter.format(moneyNumber);
             },
+
             addFoodClick: function(evt){
                 if(this.newFood && this.newPrice){
                     this.foods.push({foodID: this.nextID, name: this.newFood, price: this.newPrice});
@@ -90,13 +101,13 @@
             },
 
             deleteFoodClick: function(foodID){
-                console.log(`id of food to delete... ${foodID}`)
                 this.foods = this.foods.filter(f=>f.foodID != foodID);
 
             }
 
         },
         computed: {
+
             sortedFoods(){
               if( this.sortType === this.NAME_ORDER ){
                 return this.foods.toSorted( (x,y)=>x.name.localeCompare(y.name) );
@@ -129,6 +140,7 @@
                 return this.toUSCurrency(currentAvg);
             }
         },
+
         mounted: function(){
             if (localStorage.foods){
                 try {
@@ -157,6 +169,7 @@
             }
         }
     };
+
     const app = Vue.createApp();
     app.component("grocery-list", GroceryList);
     
