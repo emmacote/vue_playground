@@ -6,8 +6,8 @@
 </head>
 <body>
 
-<template id="grocery-list-template">
-    <table>
+<template id="add-food-template">
+        <table>
         <tr>
             <td><b>NEW GROCERY ITEM:</td>
             <td><input name="txtNewFood" type="text" placeholder="food name" v-model="newFood"/></td>
@@ -23,6 +23,12 @@
         </tr>
 
     </table>
+
+</template>
+
+<template id="grocery-list-template">
+    
+    <add-food :foods="foods"></add-food>
 
     <!-- An average of the price of each food item -->
     <table>
@@ -60,7 +66,8 @@
 </template>
 
 <div id="app">
-    <grocery-list></grocery-list>
+    <grocery-list>
+    </grocery-list>
 </div>
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -68,11 +75,45 @@
 <script>
     const currencyFormatter =  Intl.NumberFormat("en-US", {style: "currency", currency: "USD"});
 
+    const AddFood = {
+        data: function(){
+            return {
+                newFood: "milk",
+                newPrice: 3.44,
+                nextID: 0
+            }
+        },
+        props: ["foods"],
+        methods: {
+            addFoodClick: function(evt){
+                if(this.newFood && this.newPrice){
+                    this.foods.push({foodID: this.nextID, name: this.newFood, price: this.newPrice});
+                    this.nextID += 1;
+                    console.log(`next id updated to: ${this.nextID}`);
+                }
+                else {
+                    alert("fyi: food needs a name and it has to have a non-free price attached to it.");
+                }
+            }
+        },
+        mounted: function(){
+            if(localStorage.nextID){
+                this.nextID = Number(localStorage.nextID);
+            }
+        },
+        watch: {
+            nextID(newVal, oldVal){
+                localStorage.nextID = newVal;
+            }
+        },
+
+        template: "#add-food-template"
+        
+    }
+
     const GroceryList = {
         data: function(){
             return {
-                newFood: "",
-                newPrice: "",
                 foods: [],
                 sortType: 3,
                 searchTerm: "",
@@ -88,16 +129,6 @@
         methods: {
             toUSCurrency: function(moneyNumber){
                 return currencyFormatter.format(moneyNumber);
-            },
-
-            addFoodClick: function(evt){
-                if(this.newFood && this.newPrice){
-                    this.foods.push({foodID: this.nextID, name: this.newFood, price: this.newPrice});
-                    this.nextID += 1;
-                }
-                else {
-                    alert("fyi: food needs a name and it has to have a non-free price attached to it.");
-                }
             },
 
             deleteFoodClick: function(foodID){
@@ -152,9 +183,7 @@
                 }
             }
 
-            if(localStorage.nextID){
-                this.nextID = Number(localStorage.nextID);
-            }
+
         },
 
         watch: {
@@ -164,15 +193,13 @@
                 },
                 deep: true
             },
-            nextID(newVal, oldVal){
-                localStorage.nextID = newVal;
-            }
+
         }
     };
 
     const app = Vue.createApp();
     app.component("grocery-list", GroceryList);
-    
+    app.component("add-food", AddFood);
     app.mount("#app");
 </script>
 
