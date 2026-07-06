@@ -28,7 +28,7 @@
 
 <template id="grocery-list-template">
     
-    <add-food :foods="foods"></add-food>
+    <add-food @update-food-event="receiveFoodUpdate"></add-food>
 
     <!-- An average of the price of each food item -->
     <table>
@@ -58,7 +58,7 @@
     
     <!-- The actual food list with price. -->
     <ul>
-        <li v-for="food in searchedFoods" :key="food.foodID">
+        <li v-for="food in searchedFoods" :key="food.foodID"  >
             {{food.name}} - {{toUSCurrency(food.price)}}
             <button v-on:click="deleteFoodClick(food.foodID)">Delete food</button>
         </li>
@@ -83,13 +83,15 @@
                 nextID: 0
             }
         },
-        props: ["foods"],
+
         methods: {
             addFoodClick: function(evt){
                 if(this.newFood && this.newPrice){
-                    this.foods.push({foodID: this.nextID, name: this.newFood, price: this.newPrice});
+                    // this.foods.push({foodID: this.nextID, name: this.newFood, price: this.newPrice});
+                    const foodEntry = {foodID: this.nextID, name: this.newFood, price: this.newPrice};
                     this.nextID += 1;
                     console.log(`next id updated to: ${this.nextID}`);
+                    this.$emit("update-food-event", foodEntry);
                 }
                 else {
                     alert("fyi: food needs a name and it has to have a non-free price attached to it.");
@@ -119,8 +121,7 @@
                 searchTerm: "",
                 NAME_ORDER: 1,
                 PRICE_ORDER: 2,
-                NO_ORDER: 3,
-                nextID: 0
+                NO_ORDER: 3
             };
         },
 
@@ -133,7 +134,10 @@
 
             deleteFoodClick: function(foodID){
                 this.foods = this.foods.filter(f=>f.foodID != foodID);
+            },
 
+            receiveFoodUpdate: function(newFoodRec){
+                this.foods.push(newFoodRec);
             }
 
         },
@@ -182,7 +186,6 @@
                     this.foods = [];
                 }
             }
-
 
         },
 
